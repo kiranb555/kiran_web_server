@@ -1,34 +1,17 @@
-const express = require("express");
-const mongoose = require("mongoose");
-
-const homeRoute = require("./routes/home-routes");
-const contactRoute = require("./routes/contact-routes");
-// const aboutRoute = require("./routes/about-routes");
+import express from 'express';
+import cors from 'cors';
+import about from './routes/about.route.js';
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Headers", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE");
-  next();
-});
+app.use('/api/v1', about);
+app.use('*', (req, res) => res.status(404).json({
+  error : "not found"
+}))
 
-app.use("/api/", homeRoute);
-app.use("/api/contact", contactRoute);
 
-const URL = require("./constants");
-// post about data
-// app.use("/api/about", aboutRoute);
+export default app;
 
-mongoose
-  .connect(URL.MongoURL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    app.listen(8080);
-  })
-  .catch((err) => console.log(err));
